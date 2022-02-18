@@ -1,12 +1,17 @@
-import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
+
+import AppLoading from 'expo-app-loading';
+import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import * as Font from 'expo-font';
-import AppLoading from 'expo-app-loading';
 import { Asset } from 'expo-asset';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { useColorScheme, Appearance } from 'react-native';
+import LoggedOutNav from './navigators/LoggedOutNav';
+import LoggedInNav from './navigators/LoggedInNav';
 
 export default function App() {
+  const colorScheme = useColorScheme();
+
   const [loading, setLoading] = useState(true);
   const onFinish = () => setLoading(false);
   const preload = () => {
@@ -18,21 +23,22 @@ export default function App() {
       return Promise.all([...fontPromises, ...imagesPromises]);
   };
   if(loading) {
-    return <AppLoading startAsync={preload} onError={console.warn} onFinish={onFinish} />;
+    return (<AppLoading startAsync={preload} onError={console.warn} onFinish={onFinish} />);
   }
+
+  // const colorScheme = Appearance.getColorScheme();
+  const subscription = Appearance.addChangeListener(({colorScheme}) => {
+    console.log(colorScheme)
+  });
+  if (colorScheme === 'dark') {
+    // Use dark color scheme
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Nomad Coffee Native</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+    <NavigationContainer>
+      <LoggedOutNav />
+      {/* <LoggedInNav /> */}
+    </NavigationContainer>);
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+
